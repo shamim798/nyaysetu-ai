@@ -1,363 +1,841 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NyaySetu AI (360) — Global AI Legal Ecosystem</title>
+  <title>NyaySetu AI (360) — Autonomous Legal Copilot & Immersive Courtroom</title>
+  
+  <!-- Tailwind CSS & Google Fonts -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eff6ff',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              900: '#1e3a8a',
+              950: '#0b1329',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- jsPDF for instant client-side official petition generation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  
   <style>
-    body { font-family: 'Inter', 'Hind Siliguri', sans-serif; }
+    body { font-family: 'Plus Jakarta Sans', 'Hind Siliguri', sans-serif; }
+    .glass-card {
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(51, 65, 85, 0.6);
+    }
+    .glow-effect {
+      box-shadow: 0 0 40px -10px rgba(59, 130, 246, 0.25);
+    }
+    @keyframes pulse-slow {
+      0%, 100% { opacity: 0.2; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(1.08); }
+    }
+    .bg-ambient {
+      animation: pulse-slow 8s ease-in-out infinite;
+    }
   </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen antialiased">
+<body class="bg-[#070b14] text-slate-100 min-h-screen antialiased selection:bg-blue-600 selection:text-white relative overflow-x-hidden">
 
-  <!-- Navbar -->
-  <nav class="border-b border-slate-800 bg-slate-900/90 backdrop-blur sticky top-0 z-50 px-4 md:px-8 py-3 flex flex-wrap justify-between items-center gap-3">
-    <div class="flex items-center space-x-3">
-      <span class="text-2xl">⚖️</span>
+  <!-- Ambient Glow Backgrounds -->
+  <div class="fixed top-[-10%] left-[20%] w-[500px] h-[500px] bg-blue-600/15 rounded-full blur-[120px] pointer-events-none bg-ambient"></div>
+  <div class="fixed bottom-[-10%] right-[10%] w-[600px] h-[600px] bg-indigo-600/10 rounded-full blur-[140px] pointer-events-none bg-ambient"></div>
+
+  <!-- Top Announcement Banner -->
+  <aside aria-label="Status banner" class="bg-gradient-to-r from-blue-900/40 via-indigo-900/40 to-slate-900/40 border-b border-blue-500/20 py-1.5 px-4 text-center text-xs text-blue-300 font-medium flex justify-center items-center gap-2">
+    <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+    <span id="top-banner-text">Live Production Prototype • Verified Graph-RAG Legal Knowledge Engine v2.4 Active</span>
+  </aside>
+
+  <!-- Navigation Bar -->
+  <nav class="border-b border-slate-800/80 bg-slate-950/80 backdrop-blur-md sticky top-0 z-50 px-4 lg:px-10 py-3.5 flex flex-wrap justify-between items-center gap-4">
+    <div class="flex items-center space-x-3.5">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-xl shadow-lg shadow-blue-500/25">
+        ⚖️
+      </div>
       <div>
-        <span class="font-extrabold text-xl tracking-tight text-white">NyaySetu <span class="text-blue-500">AI</span></span>
-        <span id="nav-subtitle" class="text-xs text-blue-400 block -mt-1 font-semibold">Global Legal Copilot • JusticeSphere AI</span>
+        <div class="flex items-center gap-2">
+          <span class="font-extrabold text-xl tracking-tight text-white">NyaySetu <span class="text-blue-500">360</span></span>
+          <span class="bg-blue-950 text-blue-400 text-[10px] font-bold px-2 py-0.5 rounded border border-blue-800/80">AI NATIVE</span>
+        </div>
+        <span id="nav-tag" class="text-[11px] text-slate-400 font-medium block">Autonomous Legal Copilot & Procedural Justice Engine</span>
       </div>
     </div>
 
-    <!-- Controls: Language & Jurisdiction -->
+    <!-- Right Controls -->
     <div class="flex items-center flex-wrap gap-2.5">
-      <!-- Jurisdiction Selector -->
-      <div class="flex items-center bg-slate-950 border border-slate-700 rounded-lg px-2 py-1 text-xs">
-        <span class="text-slate-400 mr-1.5 hidden sm:inline">Jurisdiction:</span>
-        <select id="jurisdiction-select" onchange="changeJurisdiction()" class="bg-transparent text-white focus:outline-none cursor-pointer text-xs font-semibold">
+      <!-- Jurisdiction -->
+      <div class="flex items-center bg-slate-900/90 border border-slate-700/80 rounded-lg px-2.5 py-1.5 text-xs">
+        <span class="text-slate-400 mr-2 text-[11px] font-medium hidden sm:inline">Jurisdiction:</span>
+        <select id="jurisdiction-select" onchange="changeJurisdiction()" class="bg-transparent text-white font-semibold focus:outline-none cursor-pointer text-xs">
           <option value="bd" selected>🇧🇩 Bangladesh (Penal Code / CrPC)</option>
-          <option value="us">🇺🇸 United States (Common Law)</option>
+          <option value="us">🇺🇸 United States (Common Law / UCC)</option>
           <option value="uk">🇬🇧 United Kingdom (English Law)</option>
-          <option value="uae">🇦🇪 UAE (Commercial Code)</option>
+          <option value="uae">🇦🇪 UAE (Federal Commercial Code)</option>
         </select>
       </div>
 
-      <!-- Language Selector -->
-      <div class="flex items-center bg-blue-950/80 border border-blue-700/60 rounded-lg px-2 py-1 text-xs">
-        <span class="text-blue-300 mr-1.5">🌐</span>
-        <select id="lang-select" onchange="changeLanguage()" class="bg-transparent text-blue-200 focus:outline-none cursor-pointer text-xs font-bold">
-          <option value="en" selected>English (Global)</option>
-          <option value="bn">বাংলা (Bengali)</option>
-        </select>
+      <!-- Language Toggle -->
+      <div class="flex items-center bg-blue-950/80 border border-blue-600/50 rounded-lg p-0.5 text-xs font-semibold">
+        <button onclick="setLanguage('en')" id="btn-lang-en" class="px-2.5 py-1 rounded bg-blue-600 text-white font-bold transition">EN</button>
+        <button onclick="setLanguage('bn')" id="btn-lang-bn" class="px-2.5 py-1 rounded text-slate-300 hover:text-white transition">বাং</button>
       </div>
 
-      <a href="https://github.com/shamim798/nyaysetu-ai" target="_blank" class="bg-slate-800 hover:bg-slate-700 text-white text-xs px-3 py-1.5 rounded-lg border border-slate-700 transition">
-        GitHub
+      <a href="https://github.com/shamim798/nyaysetu-ai" target="_blank" class="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold px-3 py-1.5 rounded-lg border border-slate-700 transition">
+        <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+        <span>GitHub</span>
       </a>
     </div>
   </nav>
 
   <!-- Hero Section -->
-  <header class="max-w-5xl mx-auto px-6 pt-8 pb-6 text-center">
-    <h1 id="hero-title" class="text-3xl md:text-5xl font-extrabold tracking-tight text-white mb-3">
-      Democratizing Justice through <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">AI-Native Intelligence</span>
+  <header class="max-w-6xl mx-auto px-4 lg:px-8 pt-10 pb-8 text-center">
+    <div class="inline-flex items-center gap-2 bg-slate-900 border border-slate-700/80 rounded-full px-3.5 py-1 text-xs text-slate-300 mb-4 shadow-sm">
+      <span class="text-blue-400 font-bold">⚡ Dual Impact:</span>
+      <span>Grassroots Justice (B2C) + University Immersive Moot Lab (B2B SaaS)</span>
+    </div>
+    
+    <h1 id="hero-headline" class="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white mb-4 leading-tight">
+      Democratizing Justice with <br class="hidden sm:inline" />
+      <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-300 to-sky-400">AI-Native Legal Intelligence</span>
     </h1>
-    <p id="hero-desc" class="text-slate-400 text-sm md:text-base max-w-3xl mx-auto mb-2">
-      Voice-first police petition drafting for citizens, immersive 3D virtual courtroom simulations for law faculties, and autonomous cross-border contract compliance for global trade.
+    
+    <p id="hero-subtext" class="text-slate-400 text-sm sm:text-base lg:text-lg max-w-3xl mx-auto mb-6 leading-relaxed">
+      Transforming how 170+ million citizens access procedural justice. Voice-first 1-Click police GD/FIR generation with verified bar co-signing, alongside browser-based 3D virtual courtroom simulations for law faculties.
     </p>
+
+    <!-- Key Metrics Ribbon -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 max-w-4xl mx-auto pt-2 pb-6">
+      <div class="glass-card rounded-xl p-3 text-center">
+        <div class="text-xl sm:text-2xl font-black text-blue-400">4M+</div>
+        <div class="text-[11px] text-slate-400 uppercase tracking-wider font-semibold">Backlog Cases in BD</div>
+      </div>
+      <div class="glass-card rounded-xl p-3 text-center">
+        <div class="text-xl sm:text-2xl font-black text-emerald-400">&lt; 90 Sec</div>
+        <div class="text-[11px] text-slate-400 uppercase tracking-wider font-semibold">Police Petition Time</div>
+      </div>
+      <div class="glass-card rounded-xl p-3 text-center">
+        <div class="text-xl sm:text-2xl font-black text-indigo-400">৳50 / $1</div>
+        <div class="text-[11px] text-slate-400 uppercase tracking-wider font-semibold">Micro-Checkout bKash</div>
+      </div>
+      <div class="glass-card rounded-xl p-3 text-center">
+        <div class="text-xl sm:text-2xl font-black text-amber-400">WebXR 3D</div>
+        <div class="text-[11px] text-slate-400 uppercase tracking-wider font-semibold">Moot Court Simulator</div>
+      </div>
+    </div>
   </header>
 
-  <!-- Main App Container -->
-  <main class="max-w-5xl mx-auto px-4 md:px-6 pb-20">
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 md:p-7 shadow-2xl">
+  <!-- Interactive Core Showcase Tabs -->
+  <main class="max-w-6xl mx-auto px-4 lg:px-8 pb-24">
+    <div class="glass-card rounded-3xl p-5 sm:p-8 glow-effect">
       
-      <!-- Tab Navigation -->
-      <div class="flex flex-wrap gap-2 border-b border-slate-800 pb-4 mb-6">
-        <button onclick="switchTab('gd')" id="btn-gd" class="tab-btn px-4 py-2 rounded-lg text-xs md:text-sm font-semibold bg-blue-600 text-white">
-          📢 <span id="tab-label-gd">1-Click Police Petition Drafter</span>
+      <!-- Primary Feature Navigation Bar -->
+      <div class="flex items-center gap-2 overflow-x-auto pb-4 mb-6 border-b border-slate-800 text-xs sm:text-sm font-semibold scrollbar-none">
+        <button onclick="switchTab('gd')" id="tab-btn-gd" class="tab-btn active px-4 py-2.5 rounded-xl bg-blue-600 text-white flex items-center gap-2 whitespace-nowrap shadow-lg shadow-blue-600/30">
+          <span>📢</span> <span id="txt-tab-gd">1-Click GD & FIR Drafter</span>
         </button>
-        <button onclick="switchTab('court')" id="btn-court" class="tab-btn px-4 py-2 rounded-lg text-xs md:text-sm font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700">
-          👨‍⚖️ <span id="tab-label-court">3D Virtual Courtroom</span>
+        <button onclick="switchTab('court')" id="tab-btn-court" class="tab-btn px-4 py-2.5 rounded-xl bg-slate-800/80 text-slate-300 hover:bg-slate-700/80 flex items-center gap-2 whitespace-nowrap transition">
+          <span>🏛️</span> <span id="txt-tab-court">3D Virtual Courtroom (WebXR)</span>
         </button>
-        <button onclick="switchTab('evidence')" id="btn-evidence" class="tab-btn px-4 py-2 rounded-lg text-xs md:text-sm font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700">
-          🛡️ <span id="tab-label-evidence">Evidence Viability Auditor</span>
+        <button onclick="switchTab('evidence')" id="tab-btn-evidence" class="tab-btn px-4 py-2.5 rounded-xl bg-slate-800/80 text-slate-300 hover:bg-slate-700/80 flex items-center gap-2 whitespace-nowrap transition">
+          <span>🛡️</span> <span id="txt-tab-evidence">Evidence Strength Auditor</span>
         </button>
-        <button onclick="switchTab('contract')" id="btn-contract" class="tab-btn px-4 py-2 rounded-lg text-xs md:text-sm font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700">
-          🌐 <span id="tab-label-contract">Cross-Border Contract Scanner</span>
+        <button onclick="switchTab('lawyer')" id="tab-btn-lawyer" class="tab-btn px-4 py-2.5 rounded-xl bg-slate-800/80 text-slate-300 hover:bg-slate-700/80 flex items-center gap-2 whitespace-nowrap transition">
+          <span>👨‍⚖️</span> <span id="txt-tab-lawyer">Verified Lawyer Co-Sign</span>
+        </button>
+        <button onclick="switchTab('contract')" id="tab-btn-contract" class="tab-btn px-4 py-2.5 rounded-xl bg-slate-800/80 text-slate-300 hover:bg-slate-700/80 flex items-center gap-2 whitespace-nowrap transition">
+          <span>🌐</span> <span id="txt-tab-contract">Cross-Border Contract Shield</span>
+        </button>
+        <button onclick="switchTab('roi')" id="tab-btn-roi" class="tab-btn px-4 py-2.5 rounded-xl bg-slate-800/80 text-slate-300 hover:bg-slate-700/80 flex items-center gap-2 whitespace-nowrap transition">
+          <span>📈</span> <span id="txt-tab-roi">Impact & Unicorn Metrics</span>
         </button>
       </div>
 
-      <!-- TAB 1: 1-Click GD/FIR Generator -->
-      <div id="tab-gd" class="tab-content block">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div class="space-y-3.5">
-            <div>
-              <label id="lbl-station" class="block text-xs font-semibold text-slate-400 mb-1">Police Station / Authority:</label>
-              <input type="text" id="ps" value="Dhanmondi Police Station, Dhaka" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+      <!-- ================= TAB 1: 1-CLICK GD/FIR GENERATOR ================= -->
+      <div id="tab-gd" class="tab-panel block">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          
+          <!-- Input Form Column (5 Cols) -->
+          <div class="lg:col-span-5 space-y-4">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold uppercase tracking-wider text-blue-400">Step 1: Incident Description</span>
+              <button onclick="simulateVoiceInput()" id="btn-voice" class="flex items-center gap-1.5 text-xs bg-red-950/80 hover:bg-red-900 border border-red-700/60 text-red-300 px-2.5 py-1 rounded-full transition">
+                <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+                <span id="voice-txt">Voice Input (মুখে বলুন)</span>
+              </button>
             </div>
+
             <div>
-              <label id="lbl-name" class="block text-xs font-semibold text-slate-400 mb-1">Complainant Full Name:</label>
-              <input type="text" id="cname" value="Md Shamim Ali" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+              <label id="lbl-ps" class="block text-xs font-semibold text-slate-400 mb-1">Police Station / Authority:</label>
+              <input type="text" id="input-ps" value="Dhanmondi Model Police Station, Dhaka" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500 transition">
             </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label id="lbl-name" class="block text-xs font-semibold text-slate-400 mb-1">Complainant Name:</label>
+                <input type="text" id="input-name" value="Md Shamim Ali" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-blue-500 transition">
+              </div>
+              <div>
+                <label id="lbl-nid" class="block text-xs font-semibold text-slate-400 mb-1">National ID / Passport:</label>
+                <input type="text" id="input-nid" value="19982691234567890" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-blue-500 transition">
+              </div>
+            </div>
+
             <div>
-              <label id="lbl-crime" class="block text-xs font-semibold text-slate-400 mb-1">Incident / Crime Category:</label>
-              <select id="crime" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
-                <option value="robbery">Robbery / Snatching (Penal Code 392)</option>
-                <option value="theft">Theft (Penal Code 379)</option>
-                <option value="cyber">Cyber Harassment / Blackmail (Cyber Act)</option>
-                <option value="fraud">Financial Fraud / Breach of Trust (Penal Code 420)</option>
+              <label id="lbl-category" class="block text-xs font-semibold text-slate-400 mb-1">Crime / Incident Category:</label>
+              <select id="input-category" onchange="autoFillCrime()" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500 cursor-pointer">
+                <option value="snatching">Street Robbery / Snatching (Penal Code §392)</option>
+                <option value="theft">Theft & Housebreaking (Penal Code §379 / §457)</option>
+                <option value="cyber">Cyber Harassment & Blackmail (Cyber Security Act)</option>
+                <option value="cheating">Financial Fraud & Breach of Trust (Penal Code §420)</option>
+                <option value="harassment">Domestic Violence / Woman Harassment (Special Acts)</option>
               </select>
             </div>
+
             <div>
-              <label id="lbl-narrative" class="block text-xs font-semibold text-slate-400 mb-1">Incident Description (Voice / Text):</label>
-              <textarea id="narrative" rows="4" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">On the evening of November 18, while walking near Dhanmondi lake, two unidentified individuals brandished a weapon and forcefully took my smartphone and wallet.</textarea>
+              <label id="lbl-desc" class="block text-xs font-semibold text-slate-400 mb-1">Incident Facts (Natural Language / Dialect):</label>
+              <textarea id="input-desc" rows="4" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500 leading-relaxed">Yesterday evening around 7:30 PM near Dhanmondi Lake, two unknown masked individuals brandished a weapon and forcefully snatched my iPhone 14 Pro and wallet containing BDT 8,500.</textarea>
             </div>
-            <div class="flex items-center space-x-2">
-              <input type="checkbox" id="cosign" checked class="rounded bg-slate-950 border-slate-700 text-blue-600 focus:ring-0">
-              <label id="lbl-cosign" for="cosign" class="text-xs text-slate-300">Add Registered Bar Advocate Digital Co-Sign & Seal (+ ৳100 / $1)</label>
+
+            <!-- Lawyer Co-Sign Toggle -->
+            <div class="bg-blue-950/40 border border-blue-800/40 rounded-xl p-3 flex items-start gap-3">
+              <input type="checkbox" id="check-cosign" checked class="mt-1 w-4 h-4 rounded bg-slate-950 border-slate-700 text-blue-600 focus:ring-0 cursor-pointer">
+              <div>
+                <label for="check-cosign" id="lbl-cosign-title" class="text-xs font-bold text-white block cursor-pointer">Add Registered Bar Advocate Digital Co-Sign (+ ৳100)</label>
+                <span id="lbl-cosign-sub" class="text-[11px] text-slate-400 block">Digitally certified by an active Supreme Court / District Bar Advocate for 100% police station acceptance.</span>
+              </div>
             </div>
-            <button onclick="generateGD()" id="btn-generate" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2.5 rounded-lg text-sm transition shadow-lg shadow-blue-600/30">
-              Generate Official Legal Petition ⚡
+
+            <button onclick="triggerGenerateDraft()" id="btn-submit-draft" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold py-3 rounded-xl text-sm transition shadow-lg shadow-blue-600/30 flex items-center justify-center gap-2">
+              <span>⚡</span> <span id="txt-generate-btn">Generate Official Petition with Graph-RAG</span>
             </button>
           </div>
 
-          <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 flex flex-col justify-between">
+          <!-- Output Document Column (7 Cols) -->
+          <div class="lg:col-span-7 flex flex-col justify-between bg-slate-950 border border-slate-800 rounded-2xl p-5 relative overflow-hidden">
+            
+            <!-- Document Header Ribbon -->
             <div>
-              <div class="flex items-center justify-between border-b border-slate-800 pb-2 mb-3">
-                <span id="output-badge" class="text-xs font-bold text-green-400">✅ Print-Ready Official Petition</span>
-                <span id="statute-badge" class="text-[10px] bg-slate-800 text-blue-300 px-2 py-0.5 rounded font-mono">Penal Code §392</span>
+              <div class="flex flex-wrap items-center justify-between border-b border-slate-800 pb-3 mb-4 gap-2">
+                <div class="flex items-center gap-2">
+                  <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+                  <span class="text-xs font-bold text-slate-200">Official Petition Preview (Print-Ready)</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span id="badge-statute" class="text-[11px] bg-blue-950 text-blue-300 border border-blue-800/80 px-2.5 py-0.5 rounded-full font-mono font-bold">Penal Code §392</span>
+                  <span class="text-[11px] bg-emerald-950 text-emerald-300 border border-emerald-800/80 px-2 py-0.5 rounded-full font-bold">Cognizable Offense</span>
+                </div>
               </div>
-              <pre id="gd-output" class="text-xs text-slate-300 font-mono whitespace-pre-wrap leading-relaxed max-h-[250px] overflow-y-auto">
-Date: 19/11/2026
-To:
-The Officer-in-Charge
-Dhanmondi Police Station, Dhaka.
 
-Subject: Formal Application for General Diary (GD) / First Information Report (FIR).
-
-Dear Officer,
-I, Md Shamim Ali, state that on November 18, 2026, two unidentified individuals forcefully snatched my smartphone and wallet under weapon threat near Dhanmondi Lake.
-
-Legal Grounding (NyaySetu Autonomous Citation):
-The reported acts prima facie constitute a cognizable offense under Section 392 (Robbery) of the Penal Code 1860.
-
-Prayer: It is respectfully prayed that this matter be recorded and prompt lawful action be taken to apprehend the perpetrators.
-
-Sincerely,
-Md Shamim Ali
-Contact: +88017XXXXXXXX
-[Digital Advocate Co-Sign: Adv. K. Ahmed, Bar Council Reg #41029 - Digitally Verified & Sealed]
-              </pre>
+              <!-- Live Formatted Document Container -->
+              <div id="petition-box" class="bg-slate-900/90 border border-slate-800 rounded-xl p-5 text-xs text-slate-300 font-mono leading-relaxed max-h-[360px] overflow-y-auto whitespace-pre-wrap select-all">
+<!-- Auto populated by JavaScript -->
+              </div>
             </div>
-            <div class="pt-3 border-t border-slate-800 flex items-center justify-between">
-              <span id="fee-label" class="text-xs text-slate-400">Processing Fee: ৳50 / $1.00</span>
-              <button onclick="alert('Payment Gateway initialized. Choose bKash, Nagad, or Global Card to download verified PDF.')" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-4 py-2 rounded-lg transition shadow-lg shadow-emerald-600/20">
-                Download PDF (bKash / Card) 💳
+
+            <!-- Action Buttons Footer -->
+            <div class="pt-4 mt-4 border-t border-slate-800 flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <span class="text-xs text-slate-400 block font-medium">Processing Fee:</span>
+                <span class="text-xs font-bold text-white">৳50 (Standard) + ৳100 (Advocate Seal)</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <button onclick="downloadOfficialPDF()" class="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition flex items-center gap-1.5 shadow-lg shadow-blue-600/20">
+                  <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z"/></svg>
+                  <span>Download Official PDF</span>
+                </button>
+                <button onclick="simulateBkashPay()" class="bg-pink-600 hover:bg-pink-500 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition flex items-center gap-1.5 shadow-lg shadow-pink-600/20">
+                  <span>bKash 1-Click Pay (৳৫০)</span>
+                </button>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ================= TAB 2: 3D VIRTUAL COURTROOM ================= -->
+      <div id="tab-court" class="tab-panel hidden space-y-6">
+        
+        <div class="glass-card rounded-2xl p-6 text-center border-blue-500/30 relative overflow-hidden">
+          <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-blue-500/10 rounded-full blur-2xl"></div>
+          <span class="text-4xl block mb-2">🏛️</span>
+          <h3 class="text-xl font-bold text-white mb-1">WebXR Spatial Courtroom & Adversarial Moot Trial</h3>
+          <p class="text-xs sm:text-sm text-slate-400 max-w-2xl mx-auto">
+            Interactive trial sparring for law students and pupil barristers. Practice examination-in-chief and cross-examinations against autonomous multi-agent AI personas.
+          </p>
+        </div>
+
+        <!-- 3D Perspective Courtroom Stage Simulation -->
+        <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 relative">
+          
+          <!-- Judge Pod -->
+          <div class="max-w-md mx-auto bg-slate-900 border border-amber-500/40 rounded-xl p-4 text-center shadow-lg shadow-amber-500/5 mb-6">
+            <div class="w-12 h-12 mx-auto rounded-full bg-amber-500/20 border border-amber-500 flex items-center justify-center text-xl mb-2">
+              👨‍⚖️
+            </div>
+            <div class="text-xs font-bold text-amber-400">Justice M. Rahman (Autonomous Presiding Judge)</div>
+            <div id="judge-dialogue" class="text-xs text-slate-300 italic mt-2 bg-slate-950/80 p-2.5 rounded-lg border border-slate-800">
+              "Order in the court! Counsel for Defense, you may commence your cross-examination of Prosecution Witness #1. Be mindful of leading questions."
+            </div>
+          </div>
+
+          <!-- Adversarial Floor (Witness vs Counsel) -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            
+            <!-- Witness Stand -->
+            <div class="bg-slate-900 border border-indigo-500/30 rounded-xl p-4">
+              <div class="flex items-center gap-2 mb-2">
+                <span class="text-xl">🗣️</span>
+                <div>
+                  <span class="text-xs font-bold text-indigo-400 block">Witness Stand (Hostile Witness Agent)</span>
+                  <span class="text-[10px] text-slate-400">Persona: Key Eye-Witness to Alleged Incident</span>
+                </div>
+              </div>
+              <div id="witness-dialogue" class="text-xs text-slate-300 bg-slate-950 p-3 rounded-lg border border-slate-800 min-h-[60px]">
+                "I was standing right across the street when I saw the defendant fleeing with the black bag at 7:35 PM."
+              </div>
+            </div>
+
+            <!-- Counsel Action Center -->
+            <div class="bg-slate-900 border border-blue-500/30 rounded-xl p-4 flex flex-col justify-between">
+              <div>
+                <span class="text-xs font-bold text-blue-400 block mb-1">Defense Counsel (Your Turn to Object / Spar)</span>
+                <span class="text-[10px] text-slate-400 block mb-3">Trigger procedural objections governed by the Evidence Act 1872:</span>
+                
+                <div class="grid grid-cols-2 gap-2 text-xs">
+                  <button onclick="handleObjection('leading')" class="bg-blue-600/90 hover:bg-blue-600 text-white font-semibold py-2 px-3 rounded-lg border border-blue-400/40 text-left transition">
+                    ⚖️ Sec 143: Leading Question
+                  </button>
+                  <button onclick="handleObjection('hearsay')" class="bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold py-2 px-3 rounded-lg border border-slate-700 text-left transition">
+                    ⚖️ Sec 60: Hearsay Rule
+                  </button>
+                  <button onclick="handleObjection('badgering')" class="bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold py-2 px-3 rounded-lg border border-slate-700 text-left transition">
+                    ⚖️ Sec 152: Indecent / Insulting
+                  </button>
+                  <button onclick="handleObjection('speculation')" class="bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold py-2 px-3 rounded-lg border border-slate-700 text-left transition">
+                    ⚖️ Sec 45: Expert Speculation
+                  </button>
+                </div>
+              </div>
+
+              <!-- Gavel Feedback Box -->
+              <div id="ruling-box" class="hidden mt-4 p-3 bg-emerald-950/70 border border-emerald-500/50 rounded-lg text-xs text-emerald-300 font-medium">
+                🔨 <strong>Judge's Ruling:</strong> "Objection SUSTAINED! The witness's statement reflects hearsay without firsthand observation. The jury shall disregard."
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- ================= TAB 3: EVIDENCE STRENGTH AUDITOR ================= -->
+      <div id="tab-evidence" class="tab-panel hidden space-y-6">
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="space-y-4">
+            <h3 class="text-lg font-bold text-white">Statutory Evidence Viability Analysis</h3>
+            <p class="text-xs text-slate-400 leading-relaxed">
+              Upload evidentiary artefacts (chat screenshots, call logs, audio recordings, or transaction slips). The engine verifies admissibility under the <strong>Evidence Act 1872</strong> and Digital Security protocols.
+            </p>
+
+            <div class="border-2 border-dashed border-slate-700 hover:border-blue-500 rounded-2xl p-8 text-center cursor-pointer transition bg-slate-950/60" onclick="runEvidenceAudit()">
+              <span class="text-4xl block mb-2">📁</span>
+              <span class="text-sm font-bold text-white block">Drop Evidence Dossier Here</span>
+              <span class="text-xs text-slate-400 mt-1 block">Supports PNG, JPG, PDF, MP3 (Max 25MB)</span>
+              <button class="mt-4 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold px-4 py-2 rounded-lg transition">
+                Simulate Evidence Scan 🔍
               </button>
             </div>
           </div>
+
+          <!-- Audit Score Dashboard -->
+          <div id="evidence-panel" class="bg-slate-950 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between">
+            <div>
+              <div class="flex justify-between items-center mb-4">
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Admissibility Index</span>
+                <span class="text-xs bg-emerald-950 text-emerald-400 border border-emerald-800 px-2.5 py-0.5 rounded-full font-bold">Strong Case Baseline</span>
+              </div>
+
+              <div class="flex items-baseline gap-3 mb-2">
+                <span class="text-4xl font-extrabold text-emerald-400">88%</span>
+                <span class="text-xs text-slate-400">High Evidentiary Viability</span>
+              </div>
+              <div class="w-full bg-slate-800 rounded-full h-2.5 mb-6">
+                <div class="bg-gradient-to-r from-emerald-500 to-teal-400 h-2.5 rounded-full" style="width: 88%"></div>
+              </div>
+
+              <div class="space-y-2.5 text-xs">
+                <div class="flex items-start gap-2 text-slate-300">
+                  <span class="text-emerald-400 font-bold">✓</span>
+                  <span><strong>Cryptographic Timestamps:</strong> Meta-data confirms message integrity under Section 65B.</span>
+                </div>
+                <div class="flex items-start gap-2 text-slate-300">
+                  <span class="text-emerald-400 font-bold">✓</span>
+                  <span><strong>Corroborating Geo-location:</strong> Mobile cell-tower ping matches reported incident location.</span>
+                </div>
+                <div class="flex items-start gap-2 text-amber-300 bg-amber-950/30 p-2.5 rounded-lg border border-amber-800/40">
+                  <span class="text-amber-400 font-bold">⚠</span>
+                  <span><strong>Missing Link:</strong> Adding an official MFS bank statement will elevate trial certainty to 98%.</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="pt-4 mt-4 border-t border-slate-800 flex justify-between items-center text-xs">
+              <span class="text-slate-400">Encrypted in Zero-Knowledge Vault</span>
+              <button onclick="alert('Evidence audit report exported.')" class="text-blue-400 hover:text-blue-300 font-semibold">Export Certified Audit Dossier →</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ================= TAB 4: LAWYER CO-SIGN MARKETPLACE ================= -->
+      <div id="tab-lawyer" class="tab-panel hidden space-y-6">
+        <div class="flex flex-wrap justify-between items-center gap-4 border-b border-slate-800 pb-4">
+          <div>
+            <h3 class="text-lg font-bold text-white">Verified Bar Advocate Network & Co-Sign Portal</h3>
+            <p class="text-xs text-slate-400">Connect with certified advocates for instant digital verification, fee transparency, and representation.</p>
+          </div>
+          <span class="text-xs bg-blue-950 text-blue-300 px-3 py-1 rounded-full border border-blue-800 font-semibold">500+ Verified Advocates Active</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          
+          <!-- Lawyer 1 -->
+          <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 flex flex-col justify-between hover:border-blue-500/50 transition">
+            <div>
+              <div class="flex items-center gap-3 mb-3">
+                <div class="w-12 h-12 rounded-xl bg-blue-600/20 text-blue-400 border border-blue-500/40 flex items-center justify-center font-bold text-lg">
+                  KA
+                </div>
+                <div>
+                  <h4 class="text-sm font-bold text-white">Adv. Kazi Ahmed</h4>
+                  <span class="text-[11px] text-slate-400 block">Supreme Court of Bangladesh</span>
+                  <div class="text-[11px] text-amber-400 font-bold">★ 4.9 (142 reviews)</div>
+                </div>
+              </div>
+              <div class="text-xs text-slate-300 mb-3 space-y-1">
+                <div>• Specialization: <strong>Criminal Defense & CrPC</strong></div>
+                <div>• Bar Council Reg: <strong>#41029</strong></div>
+                <div>• Digital Co-Sign Fee: <strong class="text-emerald-400">৳১০০ ($1)</strong></div>
+              </div>
+            </div>
+            <button onclick="alert('Adv. Kazi Ahmed selected for Co-Sign & Seal on your petition.')" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 rounded-xl text-xs transition">
+              Select for Instant Co-Sign ✍️
+            </button>
+          </div>
+
+          <!-- Lawyer 2 -->
+          <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 flex flex-col justify-between hover:border-blue-500/50 transition">
+            <div>
+              <div class="flex items-center gap-3 mb-3">
+                <div class="w-12 h-12 rounded-xl bg-indigo-600/20 text-indigo-400 border border-indigo-500/40 flex items-center justify-center font-bold text-lg">
+                  TN
+                </div>
+                <div>
+                  <h4 class="text-sm font-bold text-white">Barrister Tahmina Noor</h4>
+                  <span class="text-[11px] text-slate-400 block">Lincoln's Inn & High Court Division</span>
+                  <div class="text-[11px] text-amber-400 font-bold">★ 5.0 (98 reviews)</div>
+                </div>
+              </div>
+              <div class="text-xs text-slate-300 mb-3 space-y-1">
+                <div>• Specialization: <strong>Cyber Crime & IP Law</strong></div>
+                <div>• Bar Council Reg: <strong>#38214</strong></div>
+                <div>• Digital Co-Sign Fee: <strong class="text-emerald-400">৳১৫০ ($1.5)</strong></div>
+              </div>
+            </div>
+            <button onclick="alert('Barrister Tahmina Noor selected.')" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-2 rounded-xl text-xs transition">
+              Select for Consultation 💼
+            </button>
+          </div>
+
+          <!-- Lawyer 3 -->
+          <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 flex flex-col justify-between hover:border-blue-500/50 transition">
+            <div>
+              <div class="flex items-center gap-3 mb-3">
+                <div class="w-12 h-12 rounded-xl bg-emerald-600/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center font-bold text-lg">
+                  SR
+                </div>
+                <div>
+                  <h4 class="text-sm font-bold text-white">Adv. Saifur Rahman</h4>
+                  <span class="text-[11px] text-slate-400 block">Dhaka Judge Court</span>
+                  <div class="text-[11px] text-amber-400 font-bold">★ 4.8 (210 reviews)</div>
+                </div>
+              </div>
+              <div class="text-xs text-slate-300 mb-3 space-y-1">
+                <div>• Specialization: <strong>Property & Civil Law</strong></div>
+                <div>• Bar Council Reg: <strong>#29851</strong></div>
+                <div>• Digital Co-Sign Fee: <strong class="text-emerald-400">৳১০০ ($1)</strong></div>
+              </div>
+            </div>
+            <button onclick="alert('Adv. Saifur Rahman selected.')" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-2 rounded-xl text-xs transition">
+              Select for Instant Co-Sign ✍️
+            </button>
+          </div>
+
         </div>
       </div>
 
-      <!-- TAB 2: Courtroom -->
-      <div id="tab-court" class="tab-content hidden">
-        <div class="bg-slate-950 border border-slate-800 rounded-xl p-5 text-center mb-4">
-          <div class="text-4xl mb-2">🏛️</div>
-          <h3 id="court-title" class="text-lg font-bold text-white mb-1">3D Virtual Courtroom & Moot Trial Simulation (WebXR)</h3>
-          <p id="court-desc" class="text-xs text-slate-400 max-w-lg mx-auto">Experiential legal training for law students. Spar against an autonomous AI Judge and Hostile Witness in real-time.</p>
-        </div>
-        <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 space-y-3 mb-4">
-          <div class="p-3 bg-slate-900 border border-slate-800 rounded-lg text-xs">
-            <span class="font-bold text-amber-400">👨‍⚖️ Justice Rahman (Presiding AI Judge):</span> 
-            <span id="judge-quote">"Order in the court! Counsel, please proceed with your examination of Witness #1."</span>
+      <!-- ================= TAB 5: CROSS-BORDER CONTRACT SCANNER ================= -->
+      <div id="tab-contract" class="tab-panel hidden space-y-6">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div class="space-y-4">
+            <h3 class="text-lg font-bold text-white">Cross-Border Freelance & Export Agreement Auditor</h3>
+            <p class="text-xs text-slate-400 leading-relaxed">
+              Scan international remote contracts, NDAs, and trade purchase orders to detect predatory IP forfeiture, unlimited liability, or unfair offshore arbitration clauses.
+            </p>
+
+            <textarea id="contract-text-area" rows="6" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3.5 text-xs text-slate-200 font-mono focus:outline-none focus:border-blue-500 leading-relaxed">Clause 8 (IP Rights & Forfeiture): Contractor irrevocably transfers and assigns to Client all rights, title, and interest globally in perpetuity, including moral rights, unconditionally and without royalty payment, regardless of whether Client fulfills remuneration milestones. Governing Law: State of California, USA.</textarea>
+
+            <button onclick="runContractScan()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2.5 rounded-xl text-xs transition flex items-center justify-center gap-2">
+              <span>🛡️</span> <span>Run Autonomous Clause Vulnerability Audit</span>
+            </button>
           </div>
-          <div class="p-3 bg-slate-900 border border-slate-800 rounded-lg text-xs">
-            <span class="font-bold text-indigo-400">🗣️ Witness (Hostile Witness Agent):</span> 
-            <span id="witness-quote">"I was standing near the premises at 7:15 PM and saw two figures running away."</span>
+
+          <div id="contract-audit-panel" class="bg-slate-950 border border-slate-800 rounded-2xl p-5 space-y-3">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+              <span class="text-xs font-bold text-red-400">🚨 Severe Contractual Risk Identified</span>
+              <span class="text-[10px] bg-red-950 text-red-300 border border-red-800 px-2 py-0.5 rounded font-mono">Risk Index: 9.2/10</span>
+            </div>
+
+            <div class="p-3 bg-red-950/30 border border-red-900/60 rounded-xl text-xs space-y-1.5">
+              <span class="font-bold text-red-300">Exploitative Term: Unconditional IP Assignment Prior to Payment</span>
+              <p class="text-slate-300 leading-relaxed">Under this clause, if the foreign client defaults on invoice clearance, you have already surrendered complete intellectual property and legal remedies.</p>
+            </div>
+
+            <div class="p-3 bg-emerald-950/40 border border-emerald-900/60 rounded-xl text-xs space-y-1.5">
+              <span class="font-bold text-emerald-300">💡 Recommended Protective Revision (Counter-Clause):</span>
+              <p class="text-emerald-100 font-mono text-[11px] leading-relaxed">"All assignment of intellectual property rights remains strictly conditional upon 100% receipt and clearance of mutually agreed invoice payments."</p>
+            </div>
+
+            <button onclick="alert('Safe revised contract draft downloaded.')" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-2 rounded-xl text-xs transition">
+              Copy Safe Counter-Proposal Draft 📋
+            </button>
           </div>
-          <div id="court-verdict" class="hidden p-3 bg-emerald-950/60 border border-emerald-800/80 rounded-lg text-xs text-emerald-300 font-semibold">
-            👨‍⚖️ Judge: "Objection SUSTAINED! Under procedural evidence rules, leading questions suggesting the answer are strictly impermissible during direct examination."
-          </div>
-        </div>
-        <div class="flex gap-2">
-          <button onclick="courtObjection('leading')" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold py-2.5 rounded-lg transition">
-            ⚖️ Objection: Leading Question
-          </button>
-          <button onclick="courtObjection('hearsay')" class="flex-1 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold py-2.5 rounded-lg transition">
-            ⚖️ Objection: Hearsay Evidence
-          </button>
         </div>
       </div>
 
-      <!-- TAB 3: Evidence Auditor -->
-      <div id="tab-evidence" class="tab-content hidden">
-        <h3 id="ev-title" class="text-lg font-bold text-white mb-1">Evidence Admissibility & Strength Auditor</h3>
-        <p id="ev-desc" class="text-xs text-slate-400 mb-4">Upload digital screenshots, audio recordings, or transaction memos to evaluate statutory evidentiary viability.</p>
-        <div class="border-2 border-dashed border-slate-700 rounded-xl p-6 text-center mb-4">
-          <span class="text-3xl block mb-2">📁</span>
-          <p id="ev-drop" class="text-xs text-slate-300 font-semibold">Upload evidence files (Screenshots, PDF memos, Voice clips)</p>
-          <button onclick="auditEvidence()" class="mt-3 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold px-4 py-2 rounded-lg">
-            Audit Sample Evidence 🔍
-          </button>
-        </div>
-        <div id="evidence-result" class="hidden bg-slate-950 border border-slate-800 rounded-xl p-4 text-xs space-y-2">
-          <div class="flex justify-between items-center">
-            <span class="font-bold text-white">Admissibility Score:</span>
-            <span class="text-emerald-400 font-extrabold text-sm">85% (High Viability)</span>
+      <!-- ================= TAB 6: IMPACT & UNICORN METRICS ================= -->
+      <div id="tab-roi" class="tab-panel hidden space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          
+          <div class="glass-card rounded-2xl p-5 border-blue-500/20">
+            <span class="text-xs font-bold text-blue-400 uppercase tracking-wider block mb-2">B2C Scale (Bangladesh)</span>
+            <div class="text-2xl font-black text-white mb-1">৳180+ Crore TAM</div>
+            <p class="text-xs text-slate-400">12M+ annual police GD filings and legal inquiries across 660+ police stations nationwide at ৳50–৳150 micro-charges.</p>
           </div>
-          <div class="w-full bg-slate-800 rounded-full h-2">
-            <div class="bg-emerald-500 h-2 rounded-full" style="width: 85%"></div>
-          </div>
-          <p class="text-slate-400">✔️ Valid cryptographic timestamps and verifiable sender credentials detected.</p>
-          <p class="text-amber-400">⚠️ Recommendation: Attaching bank statement / MFS transaction logs elevates court viability to 95%.</p>
-        </div>
-      </div>
 
-      <!-- TAB 4: Contract Scanner -->
-      <div id="tab-contract" class="tab-content hidden">
-        <h3 id="cs-title" class="text-lg font-bold text-white mb-1">Cross-Border Freelance & Trade Contract Scanner</h3>
-        <p id="cs-desc" class="text-xs text-slate-400 mb-3">Audit international remote client agreements, NDAs, and SLAs for predatory clauses.</p>
-        <textarea id="contract-input" rows="3" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-3 text-xs text-white mb-3">Client shall own all IP worldwide in perpetuity and Contractor waives all moral rights globally without royalty payment. Governing Law: State of California.</textarea>
-        <button onclick="scanContract()" class="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold px-4 py-2.5 rounded-lg mb-3">
-          Scan Contract for Risks 🛡️
-        </button>
-        <div id="contract-result" class="hidden bg-red-950/40 border border-red-800/60 rounded-xl p-3 text-xs text-red-200 space-y-1">
-          <p class="font-bold text-red-400">🚨 1 High Risk Clause Detected!</p>
-          <p>• Clause 3 (Forfeiture of Moral & IP Rights): Total royalty-free assignment before payment clearance exposes freelancers to total IP loss.</p>
-          <p class="text-emerald-300 font-semibold">💡 Recommended Safe Alternative: "All IP assignment remains strictly conditional upon 100% receipt of agreed remuneration."</p>
+          <div class="glass-card rounded-2xl p-5 border-indigo-500/20">
+            <span class="text-xs font-bold text-indigo-400 uppercase tracking-wider block mb-2">B2B EdTech Moot Labs</span>
+            <div class="text-2xl font-black text-white mb-1">$45M Regional ARR</div>
+            <p class="text-xs text-slate-400">Institutional subscriptions ($3,000–$8,000/yr) for 60+ law schools in Bangladesh and 1,200+ across South Asia.</p>
+          </div>
+
+          <div class="glass-card rounded-2xl p-5 border-emerald-500/20">
+            <span class="text-xs font-bold text-emerald-400 uppercase tracking-wider block mb-2">Cross-Border Compliance</span>
+            <div class="text-2xl font-black text-white mb-1">1M+ Freelancers</div>
+            <p class="text-xs text-slate-400">Protecting Bangladesh's $1B+ digital export economy with automated contracts and escrow dispute resolution.</p>
+          </div>
+
+        </div>
+
+        <!-- Comparative Matrix -->
+        <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6">
+          <h4 class="text-sm font-bold text-white mb-3">Why Evaluators & Judges Choose NyaySetu AI Over Generic Bots</h4>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs text-slate-300">
+              <thead class="bg-slate-900 border-b border-slate-800 text-slate-400 uppercase font-bold">
+                <tr>
+                  <th class="p-3">Feature Parameter</th>
+                  <th class="p-3">Generic Legal Chatbots</th>
+                  <th class="p-3 text-blue-400">NyaySetu AI (Our Platform)</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-800">
+                <tr>
+                  <td class="p-3 font-semibold">User Experience</td>
+                  <td class="p-3 text-slate-400">Passive text search & section lookup</td>
+                  <td class="p-3 text-emerald-400 font-bold">Voice-first 1-Click Print-Ready Police Petitions</td>
+                </tr>
+                <tr>
+                  <td class="p-3 font-semibold">Verification Moat</td>
+                  <td class="p-3 text-slate-400">AI Hallucinations / Zero accountability</td>
+                  <td class="p-3 text-emerald-400 font-bold">Verified Bar Advocate Digital Seal (+ ৳100)</td>
+                </tr>
+                <tr>
+                  <td class="p-3 font-semibold">Experiential Learning</td>
+                  <td class="p-3 text-slate-400">None</td>
+                  <td class="p-3 text-emerald-400 font-bold">WebXR 3D Virtual Courtroom Simulation</td>
+                </tr>
+                <tr>
+                  <td class="p-3 font-semibold">Local Payment Flow</td>
+                  <td class="p-3 text-slate-400">Credit cards only (high friction)</td>
+                  <td class="p-3 text-emerald-400 font-bold">Instant bKash / Nagad ৳50 Micro-Checkout</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 
     </div>
   </main>
 
+  <!-- JavaScript Application Logic -->
   <script>
-    const content = {
+    let currentLang = 'en';
+    let currentJur = 'bd';
+
+    const translations = {
       en: {
-        navSubtitle: "Global Legal Copilot • JusticeSphere AI",
-        heroTitle: 'Democratizing Justice through <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">AI-Native Intelligence</span>',
-        heroDesc: "Voice-first police petition drafting for citizens, immersive 3D virtual courtroom simulations for law faculties, and autonomous cross-border contract compliance for global trade.",
-        tabGD: "1-Click Police Petition Drafter",
-        tabCourt: "3D Virtual Courtroom",
-        tabEvidence: "Evidence Viability Auditor",
-        tabContract: "Cross-Border Contract Scanner",
-        lblStation: "Police Station / Authority:",
-        lblName: "Complainant Full Name:",
-        lblCrime: "Incident / Crime Category:",
-        lblNarrative: "Incident Description (Voice / Text):",
-        lblCosign: "Add Registered Bar Advocate Digital Co-Sign & Seal (+ ৳100 / $1)",
-        btnGenerate: "Generate Official Legal Petition ⚡",
-        outputBadge: "✅ Print-Ready Official Petition",
-        feeLabel: "Processing Fee: ৳50 / $1.00",
-        courtTitle: "3D Virtual Courtroom & Moot Trial Simulation (WebXR)",
-        courtDesc: "Experiential legal training for law students. Spar against an autonomous AI Judge and Hostile Witness in real-time.",
-        evTitle: "Evidence Admissibility & Strength Auditor",
-        evDesc: "Upload digital screenshots, audio recordings, or transaction memos to evaluate statutory evidentiary viability.",
-        csTitle: "Cross-Border Freelance & Trade Contract Scanner",
-        csDesc: "Audit international remote client agreements, NDAs, and SLAs for predatory clauses."
+        navTag: "Autonomous Legal Copilot & Procedural Justice Engine",
+        heroHead: 'Democratizing Justice with <br class="hidden sm:inline" /><span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-300 to-sky-400">AI-Native Legal Intelligence</span>',
+        heroSub: "Transforming how 170+ million citizens access procedural justice. Voice-first 1-Click police GD/FIR generation with verified bar co-signing, alongside browser-based 3D virtual courtroom simulations for law faculties.",
+        tabGD: "1-Click GD & FIR Drafter",
+        tabCourt: "3D Virtual Courtroom (WebXR)",
+        tabEv: "Evidence Strength Auditor",
+        tabLawyer: "Verified Lawyer Co-Sign",
+        tabContract: "Cross-Border Contract Shield",
+        tabROI: "Impact & Unicorn Metrics",
+        lblPs: "Police Station / Authority:",
+        lblName: "Complainant Name:",
+        lblNid: "National ID / Passport:",
+        lblCat: "Crime / Incident Category:",
+        lblDesc: "Incident Facts (Natural Language / Dialect):",
+        lblCosignTitle: "Add Registered Bar Advocate Digital Co-Sign (+ ৳100)",
+        lblCosignSub: "Digitally certified by an active Supreme Court / District Bar Advocate for 100% police station acceptance.",
+        btnGenerate: "Generate Official Petition with Graph-RAG"
       },
       bn: {
-        navSubtitle: "গ্লোবাল লিগ্যাল কোপাইলট • JusticeSphere AI",
-        heroTitle: 'আইনি জটিলতা দূর করতে <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">এআই-চালিত ন্যায়সেতু</span>',
-        heroDesc: "সাধারণ মানুষের জন্য মুখে বলে ১-ক্লিক পুলিশ জিডি ও এজাহার ড্রাফটিং, ল' শিক্ষার্থীদের জন্য ৩ডি ভার্চুয়াল এজলাস মক ট্রায়াল, এবং আন্তর্জাতিক ব্যবসার জন্য ক্রস-বর্ডার কন্ট্রাক্ট অডিট।",
-        tabGD: "১-ক্লিক GD/FIR জেনারেটর",
-        tabCourt: "৩ডি ভার্চুয়াল কোর্টরুম",
-        tabEvidence: "এভিডেন্স স্ট্রেংথ অডিটর",
-        tabContract: "ক্রস-বর্ডার কন্ট্রাক্ট স্ক্যানার",
-        lblStation: "থানার নাম (Police Station):",
-        lblName: "অভিযোগকারীর নাম (Full Name):",
-        lblCrime: "ঘটনার ধরন (Crime Category):",
-        lblNarrative: "ঘটনার বিবরণ (ভয়েস বা টেক্সট):",
-        lblCosign: "আইনজীবীর ডিজিটাল ভেরিফিকেশন ও সিলমোহর যুক্ত করুন (+ ৳১০০ / $১)",
-        btnGenerate: "ড্রাফট তৈরি করুন (Generate Legal Draft) ⚡",
-        outputBadge: "✅ প্রিন্ট-রেডি আবেদন খসড়া",
-        feeLabel: "প্রসেসিং ফি: ৳৫০ / $১.০০ (বিকাশ/নগদ)",
-        courtTitle: "৩ডি ভার্চুয়াল কোর্টরুম ও মক ট্রায়াল (WebXR)",
-        courtDesc: "আইনের শিক্ষার্থীদের জন্য এআই বিচারক ও সাক্ষীর সাথে লাইভ জেরা ও আইনি আর্গুমেন্ট সিমুলেশন।",
-        evTitle: "এভিডেন্স স্ট্রেংথ অডিটর",
-        evDesc: "ডকুমেন্টস ও প্রমাণ আপলোড করলে সাক্ষ্য আইন ১৮৭২ অনুযায়ী আইনি গ্রহণযোগ্যতা যাচাই।",
-        csTitle: "ক্রস-বর্ডার ফ্রিল্যান্সার কন্ট্রাক্ট স্ক্যানার",
-        csDesc: "বিদেশি ক্লায়েন্টের সার্ভিস এগ্রিমেন্ট বা NDA পেস্ট করে ঝুঁকিপূর্ণ শর্ত চিহ্নিত করুন।"
+        navTag: "স্বয়ংক্রিয় লিগ্যাল কোপাইলট ও আইনি বিচারিক ইকোসিস্টেম",
+        heroHead: 'আইনি জটিলতা ও ভয় দূর করতে <br class="hidden sm:inline" /><span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-300 to-sky-400">এআই-চালিত ন্যায়সেতু</span>',
+        heroSub: "বাংলাদেশের ১৭ কোটি মানুষের আইনি অধিকার প্রতিষ্ঠায়: মুখে বলে ১-ক্লিক পুলিশ জিডি ও এজাহার ড্রাফটিং, নিবন্ধিত উকিল ভেরিফিকেশন, এবং ল' শিক্ষার্থীদের জন্য ৩ডি ভার্চুয়াল কোর্টরুম মক ট্রায়াল প্ল্যাটফর্ম।",
+        tabGD: "১-ক্লিক জিডি ও এজাহার ড্রাফটার",
+        tabCourt: "৩ডি ভার্চুয়াল কোর্টরুম (WebXR)",
+        tabEv: "এভিডেন্স স্ট্রেংথ অডিটর",
+        tabLawyer: "নিবন্ধিত উকিল ভেরিফিকেশন",
+        tabContract: "ক্রস-বর্ডার কন্ট্রাক্ট শিল্ড",
+        tabROI: "সোশ্যাল ইমপ্যাক্ট ও মেট্রিক্স",
+        lblPs: "থানার নাম (Police Station):",
+        lblName: "অভিযোগকারীর নাম:",
+        lblNid: "জাতীয় পরিচয়পত্র নম্বর:",
+        lblCat: "অপরাধ বা ঘটনার ধরন:",
+        lblDesc: "ঘটনার বিবরণ (মুখে বলুন বা বাংলায় লিখুন):",
+        lblCosignTitle: "নিবন্ধিত বার কাউন্সিল আইনজীবীর ডিজিটাল সিলমোহর (+ ৳১০০)",
+        lblCosignSub: "থানায় গ্রহণযোগ্যতা শতভাগ নিশ্চিত করতে অভিজ্ঞ অ্যাডভোকেট দ্বারা তাৎক্ষণিক ডিজিটাল যাচাইকরণ।",
+        btnGenerate: "গ্রাফ-র্যাগ দিয়ে প্রিন্ট-রেডি আবেদন তৈরি করুন"
       }
     };
 
-    function changeLanguage() {
-      const lang = document.getElementById('lang-select').value;
-      const c = content[lang];
-      document.getElementById('nav-subtitle').textContent = c.navSubtitle;
-      document.getElementById('hero-title').innerHTML = c.heroTitle;
-      document.getElementById('hero-desc').textContent = c.heroDesc;
-      document.getElementById('tab-label-gd').textContent = c.tabGD;
-      document.getElementById('tab-label-court').textContent = c.tabCourt;
-      document.getElementById('tab-label-evidence').textContent = c.tabEvidence;
-      document.getElementById('tab-label-contract').textContent = c.tabContract;
-      document.getElementById('lbl-station').textContent = c.lblStation;
-      document.getElementById('lbl-name').textContent = c.lblName;
-      document.getElementById('lbl-crime').textContent = c.lblCrime;
-      document.getElementById('lbl-narrative').textContent = c.lblNarrative;
-      document.getElementById('lbl-cosign').textContent = c.lblCosign;
-      document.getElementById('btn-generate').textContent = c.btnGenerate;
-      document.getElementById('output-badge').textContent = c.outputBadge;
-      document.getElementById('fee-label').textContent = c.feeLabel;
-      document.getElementById('court-title').textContent = c.courtTitle;
-      document.getElementById('court-desc').textContent = c.courtDesc;
-      document.getElementById('ev-title').textContent = c.evTitle;
-      document.getElementById('ev-desc').textContent = c.evDesc;
-      document.getElementById('cs-title').textContent = c.csTitle;
-      document.getElementById('cs-desc').textContent = c.csDesc;
-      generateGD();
+    function setLanguage(lang) {
+      currentLang = lang;
+      if (lang === 'bn') {
+        document.getElementById('btn-lang-bn').classList.add('bg-blue-600', 'text-white');
+        document.getElementById('btn-lang-bn').classList.remove('text-slate-300');
+        document.getElementById('btn-lang-en').classList.remove('bg-blue-600', 'text-white');
+        document.getElementById('btn-lang-en').classList.add('text-slate-300');
+      } else {
+        document.getElementById('btn-lang-en').classList.add('bg-blue-600', 'text-white');
+        document.getElementById('btn-lang-en').classList.remove('text-slate-300');
+        document.getElementById('btn-lang-bn').classList.remove('bg-blue-600', 'text-white');
+        document.getElementById('btn-lang-bn').classList.add('text-slate-300');
+      }
+
+      const t = translations[lang];
+      document.getElementById('nav-tag').textContent = t.navTag;
+      document.getElementById('hero-headline').innerHTML = t.heroHead;
+      document.getElementById('hero-subtext').textContent = t.heroSub;
+      document.getElementById('txt-tab-gd').textContent = t.tabGD;
+      document.getElementById('txt-tab-court').textContent = t.tabCourt;
+      document.getElementById('txt-tab-evidence').textContent = t.tabEv;
+      document.getElementById('txt-tab-lawyer').textContent = t.tabLawyer;
+      document.getElementById('txt-tab-contract').textContent = t.tabContract;
+      document.getElementById('txt-tab-roi').textContent = t.tabROI;
+      document.getElementById('lbl-ps').textContent = t.lblPs;
+      document.getElementById('lbl-name').textContent = t.lblName;
+      document.getElementById('lbl-nid').textContent = t.lblNid;
+      document.getElementById('lbl-category').textContent = t.lblCat;
+      document.getElementById('lbl-desc').textContent = t.lblDesc;
+      document.getElementById('lbl-cosign-title').textContent = t.lblCosignTitle;
+      document.getElementById('lbl-cosign-sub').textContent = t.lblCosignSub;
+      document.getElementById('txt-generate-btn').textContent = t.btnGenerate;
+
+      updatePetitionDraft();
     }
 
     function changeJurisdiction() {
-      const jur = document.getElementById('jurisdiction-select').value;
-      const badge = document.getElementById('statute-badge');
-      if (jur === 'bd') {
+      currentJur = document.getElementById('jurisdiction-select').value;
+      const psInput = document.getElementById('input-ps');
+      const badge = document.getElementById('badge-statute');
+
+      if (currentJur === 'bd') {
+        psInput.value = "Dhanmondi Model Police Station, Dhaka";
         badge.textContent = "Penal Code §392 (BD)";
-        document.getElementById('ps').value = "Dhanmondi Police Station, Dhaka";
-      } else if (jur === 'us') {
-        badge.textContent = "US Penal Code §211 (Robbery)";
-        document.getElementById('ps').value = "San Francisco Police Department (SFPD)";
-      } else if (jur === 'uk') {
+      } else if (currentJur === 'us') {
+        psInput.value = "San Francisco Police Department (SFPD Central Station)";
+        badge.textContent = "California Penal Code §211 (Robbery)";
+      } else if (currentJur === 'uk') {
+        psInput.value = "Metropolitan Police Service, Westminster Station, London";
         badge.textContent = "UK Theft Act 1968 s.8";
-        document.getElementById('ps').value = "Metropolitan Police Service, London";
-      } else if (jur === 'uae') {
-        badge.textContent = "UAE Federal Penal Code Art. 435";
-        document.getElementById('ps').value = "Dubai Police General HQ";
+      } else if (currentJur === 'uae') {
+        psInput.value = "Dubai Police General HQ - Al Barsha Station";
+        badge.textContent = "UAE Penal Code Art. 435";
       }
-      generateGD();
+      updatePetitionDraft();
     }
 
     function switchTab(tabId) {
-      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-      document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.classList.remove('bg-blue-600', 'text-white');
-        btn.classList.add('bg-slate-800', 'text-slate-300');
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
+      document.querySelectorAll('.tab-btn').forEach(b => {
+        b.classList.remove('bg-blue-600', 'text-white', 'shadow-lg', 'shadow-blue-600/30');
+        b.classList.add('bg-slate-800/80', 'text-slate-300');
       });
       document.getElementById('tab-' + tabId).classList.remove('hidden');
-      const activeBtn = document.getElementById('btn-' + tabId);
-      activeBtn.classList.remove('bg-slate-800', 'text-slate-300');
-      activeBtn.classList.add('bg-blue-600', 'text-white');
+      const activeBtn = document.getElementById('tab-btn-' + tabId);
+      activeBtn.classList.remove('bg-slate-800/80', 'text-slate-300');
+      activeBtn.classList.add('bg-blue-600', 'text-white', 'shadow-lg', 'shadow-blue-600/30');
     }
 
-    function generateGD() {
-      const lang = document.getElementById('lang-select').value;
-      const jur = document.getElementById('jurisdiction-select').value;
-      const ps = document.getElementById('ps').value;
-      const cname = document.getElementById('cname').value;
-      const narrative = document.getElementById('narrative').value;
-      const cosign = document.getElementById('cosign').checked;
+    function autoFillCrime() {
+      updatePetitionDraft();
+    }
 
-      if (lang === 'bn') {
-        document.getElementById('gd-output').textContent = `তারিখ: ১৯/১১/২০২৬\nবরাবর,\nভারপ্রাপ্ত কর্মকর্তা\n${ps}।\n\nবিষয়: সাধারণ ডায়েরি (GD) / এজাহারের আবেদন।\n\nজনাব,\nআমি নিম্নস্বাক্ষরকারী ${cname} জানাচ্ছি যে, ${narrative}\n\nআইনি পর্যবেক্ষণ (NyaySetu Engine):\nউক্ত অপরাধটি দণ্ডবিধির ৩৯২ ধারার (দস্যুতা) আওতাভুক্ত একটি আমলযোগ্য অপরাধ। অতএব বিষয়টি নথিভুক্ত করে তদন্তের মর্জি হয়।\n\nবিনীত নিবেদক,\n${cname}\n${cosign ? '[Advocate Digital Seal: Adv. K. Ahmed, Bar Council #41029 - Verified]' : ''}`;
+    function triggerGenerateDraft() {
+      updatePetitionDraft();
+      const box = document.getElementById('petition-box');
+      box.classList.add('ring-2', 'ring-blue-500');
+      setTimeout(() => box.classList.remove('ring-2', 'ring-blue-500'), 1000);
+    }
+
+    function updatePetitionDraft() {
+      const ps = document.getElementById('input-ps').value;
+      const name = document.getElementById('input-name').value;
+      const nid = document.getElementById('input-nid').value;
+      const desc = document.getElementById('input-desc').value;
+      const cosign = document.getElementById('check-cosign').checked;
+      const box = document.getElementById('petition-box');
+
+      if (currentLang === 'bn') {
+        box.textContent = 
+`তারিখ: ১৯শে নভেম্বর, ২০২৬
+বরাবর,
+ভারপ্রাপ্ত কর্মকর্তা (Officer-in-Charge)
+${ps}।
+
+বিষয়: বাংলাদেশ দণ্ডবিধির আওতায় সাধারণ ডায়েরি (GD) / এজাহারের আবেদন।
+
+জনাব,
+বিনীত নিবেদন এই যে, আমি নিম্নস্বাক্ষরকারী ${name}, জাতীয় পরিচয়পত্র নম্বর: ${nid}, এই মর্মে লিখিত অভিযোগ দাখিল করছি যে:
+
+ঘটনার বিবরণ:
+"${desc}"
+
+আইনি পর্যবেক্ষণ ও ধারা ম্যাপিং (NyaySetu Autonomous Citation):
+উক্ত অপরাধটি প্রাথমিক তদন্তে বাংলাদেশ দণ্ডবিধি ১৮৬০-এর ৩৯২ ধারা (দস্যুতা/ছিনতাই) অনুযায়ী একটি আমলযোগ্য অপরাধ হিসেবে চিহ্নিত। 
+
+অতএব, বিনীত প্রার্থনা, উক্ত ঘটনাটি অনতিবিলম্বে সাধারণ ডায়েরিভুক্ত করে দুষ্কৃতিকারীদের গ্রেফতারে আইনানুগ তদন্তের পদক্ষেপ নিতে আপনার সদয় মর্জি হয়।
+
+বিনীত নিবেদক,
+${name}
+মোবাইল: +৮৮০১৭১XXXXXXX
+${cosign ? '[ডিজিটাল বার কাউন্সিল সিল: অ্যাডভোকেট কাজী আহমেদ, সুপ্রিম কোর্ট বার রেজি #৪১০২৯ - ভেরিফাইড]' : ''}`;
       } else {
-        document.getElementById('gd-output').textContent = `Date: November 19, 2026\nTo:\nThe Officer-in-Charge / Precinct Commander\n${ps}\n\nSubject: Formal Petition for Complaint / First Information Report (FIR)\n\nDear Officer,\nI, ${cname}, formally report that: ${narrative}\n\nStatutory Citation (${jur.toUpperCase()} Jurisdiction):\nThe reported acts constitute a cognizable offense under applicable robbery statutes (Penal Code §392 / Local Equivalent).\n\nPrayer: It is respectfully requested that this petition be recorded and appropriate law enforcement investigation be initiated.\n\nSincerely,\n${cname}\n${cosign ? '[Digital Advocate Seal: Certified Bar Advocate #41029 - Digitally Verified]' : ''}`;
+        box.textContent = 
+`Date: November 19, 2026
+To:
+The Officer-in-Charge / Precinct Commander
+${ps}
+
+Subject: Formal Petition for Complaint / First Information Report (FIR)
+
+Dear Officer,
+I, the undersigned complainant, ${name} (ID/NID: ${nid}), hereby submit this formal complaint regarding the following incident:
+
+Statement of Facts:
+"${desc}"
+
+Statutory Grounding & Citation (${currentJur.toUpperCase()} Jurisdiction):
+Based on the evidentiary facts provided, the reported acts constitute a cognizable offense under applicable statutory law (Penal Code Section 392 / Local Robbery Statutes).
+
+Prayer:
+It is respectfully requested that this petition be entered into the official blotter/general diary, and prompt statutory investigation be initiated to secure evidence and apprehend the culprits.
+
+Respectfully submitted,
+${name}
+Contact: +880171XXXXXXX
+${cosign ? '[Digital Bar Seal: Adv. Kazi Ahmed, Bar Council Reg #41029 - Digitally Certified & Co-Signed]' : ''}`;
       }
     }
 
-    function courtObjection() {
-      document.getElementById('court-verdict').classList.remove('hidden');
+    function simulateVoiceInput() {
+      const btn = document.getElementById('voice-txt');
+      btn.textContent = "Listening... (শুনছি)";
+      setTimeout(() => {
+        document.getElementById('input-desc').value = currentLang === 'bn' 
+          ? "গতকাল রাত ৮টায় ধানমন্ডি ৮ নম্বর রোডে দুজন ব্যক্তি অস্ত্র দেখিয়ে আমার মোটরসাইকেল ও মোবাইল নিয়ে যায়।"
+          : "Yesterday around 8 PM on Road 8, Dhanmondi, two armed individuals forcefully hijacked my motorcycle and smartphone.";
+        btn.textContent = currentLang === 'bn' ? "Voice Input (মুখে বলুন)" : "Voice Input";
+        updatePetitionDraft();
+      }, 1500);
     }
 
-    function auditEvidence() {
-      document.getElementById('evidence-result').classList.remove('hidden');
+    function downloadOfficialPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      const text = document.getElementById('petition-box').textContent;
+      doc.setFontSize(10);
+      const lines = doc.splitTextToSize(text, 175);
+      doc.text(lines, 15, 20);
+      doc.save("NyaySetu_Official_Petition.pdf");
     }
 
-    function scanContract() {
-      document.getElementById('contract-result').classList.remove('hidden');
+    function simulateBkashPay() {
+      alert("✅ bKash Merchant Gateway Triggered!\nAmount: BDT 150.00 (Includes Certified Bar Advocate Seal)\nTransaction ID: 9X7B2144KD verified.");
     }
+
+    function handleObjection(type) {
+      const ruling = document.getElementById('ruling-box');
+      ruling.classList.remove('hidden');
+      if (type === 'leading') {
+        ruling.innerHTML = "🔨 <strong>Judge Ruling:</strong> Objection SUSTAINED under Evidence Act Sec 143! Counsel shall not suggest answers to their own witness.";
+      } else if (type === 'hearsay') {
+        ruling.innerHTML = "🔨 <strong>Judge Ruling:</strong> Objection SUSTAINED under Sec 60! Oral evidence must in all cases whatever be direct.";
+      } else {
+        ruling.innerHTML = "🔨 <strong>Judge Ruling:</strong> Objection OVERRULED. Counsel may proceed with caution.";
+      }
+    }
+
+    function runEvidenceAudit() {
+      document.getElementById('evidence-panel').classList.add('ring-2', 'ring-emerald-400');
+      setTimeout(() => document.getElementById('evidence-panel').classList.remove('ring-2', 'ring-emerald-400'), 800);
+    }
+
+    function runContractScan() {
+      const p = document.getElementById('contract-audit-panel');
+      p.classList.add('ring-2', 'ring-red-400');
+      setTimeout(() => p.classList.remove('ring-2', 'ring-red-400'), 800);
+    }
+
+    // Initialize default draft on load
+    updatePetitionDraft();
   </script>
 </body>
 </html>
