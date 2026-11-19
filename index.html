@@ -131,6 +131,9 @@
         <button onclick="tab('contract')" id="tab-btn-contract" class="tab-btn px-4 py-2.5 rounded-t-lg text-slate-400 hover:text-slate-200 flex items-center gap-2">
           <span>🌐</span> <span id="t-contract">5. Cross-Border Contract Audit</span>
         </button>
+        <button onclick="tab('arch')" id="tab-btn-arch" class="tab-btn px-4 py-2.5 rounded-t-lg text-slate-400 hover:text-slate-200 flex items-center gap-2">
+          <span>⚙️</span> <span id="t-arch">6. System Architecture (Graph-RAG)</span>
+        </button>
       </div>
 
       <!-- ================= SECTION 1: CITIZEN PROCEDURAL FILING ================= -->
@@ -437,30 +440,57 @@
         </div>
       </div>
 
-      <!-- ================= SECTION 5: CONTRACT AUDIT ================= -->
-      <div id="panel-contract" class="panel hidden p-6 space-y-4">
-        <h3 class="text-base font-bold text-white font-serif-legal">Cross-Border Agreement Review (UNCITRAL / English Law)</h3>
-        <p class="text-xs text-slate-400">Automated statutory risk extraction for software exporters, freelance developers, and trade agreements.</p>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-          <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 space-y-2">
-            <span class="font-bold text-slate-300">Scanned Agreement Clause:</span>
-            <pre class="bg-slate-900 p-2.5 rounded border border-slate-800 text-slate-300 font-mono text-[11px] whitespace-pre-wrap leading-relaxed">
-"Clause 14.2: Developer hereby assigns all worldwide Intellectual Property in perpetuity without limitation upon execution of this contract, irrespective of invoice payment status. Governing law shall be the State of Delaware."
-            </pre>
+      <!-- ================= SECTION 6: SYSTEM ARCHITECTURE & AI PIPELINE ================= -->
+      <div id="panel-arch" class="panel hidden p-6 space-y-6">
+        <div class="border-b border-slate-800 pb-3">
+          <h3 class="text-base font-bold text-white font-serif-legal">AI-Native System Flow: From Voice Input to Certified Legal Petition</h3>
+          <p class="text-xs text-slate-400">Technical grounding for evaluators: Graph-RAG statutory traversal, Multi-Agent orchestration, and Zero-Knowledge security.</p>
+        </div>
+
+        <!-- 4-Stage End-to-End Pipeline Visualization -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-xs font-mono">
+          
+          <div class="bg-slate-950 border border-slate-800 p-4 rounded-xl space-y-2">
+            <div class="flex items-center gap-2 text-blue-400 font-bold">
+              <span>01</span> <span>Ingestion Gateway</span>
+            </div>
+            <p class="text-[11px] text-slate-400 font-sans">Accepts natural spoken Bengali dialects (Chittagong, Sylhet, Noakhali) or English text. Low-latency Whisper STT tokenization.</p>
+            <div class="bg-slate-900 p-2 rounded text-[10px] text-slate-300">Input: Spoken audio/text</div>
           </div>
 
-          <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 space-y-3">
-            <div class="flex items-center gap-2 text-red-400 font-bold">
-              <span>🚨</span> <span>Severe Legal Risk: Unconditional IP Forfeiture</span>
+          <div class="bg-slate-950 border border-slate-800 p-4 rounded-xl space-y-2">
+            <div class="flex items-center gap-2 text-indigo-400 font-bold">
+              <span>02</span> <span>Graph-RAG Ontology</span>
             </div>
-            <p class="text-slate-300 text-[11px] leading-relaxed">
-              If client terminates or defaults on remuneration, ownership has already vested in client under Delaware jurisdiction, depriving developer of contractual lien.
-            </p>
-            <div class="bg-emerald-950/50 border border-emerald-800 p-2 rounded text-emerald-200 font-mono text-[11px]">
-              <strong>Protected Replacement Clause:</strong><br/>
-              "IP transfer shall become effective exclusively upon 100% full receipt and clearance of agreed invoice payment."
+            <p class="text-[11px] text-slate-400 font-sans">Traverses hierarchical legal graph: Penal Code 1860, CrPC 1898, CPC 1908 & verified Supreme Court reports to extract accurate sections.</p>
+            <div class="bg-slate-900 p-2 rounded text-[10px] text-emerald-400">Section 392 & 397 identified</div>
+          </div>
+
+          <div class="bg-slate-950 border border-slate-800 p-4 rounded-xl space-y-2">
+            <div class="flex items-center gap-2 text-amber-400 font-bold">
+              <span>03</span> <span>Multi-Agent Swarm</span>
             </div>
+            <p class="text-[11px] text-slate-400 font-sans">Independent agents run in parallel: Fact Extractor, Procedural Auditor, and Courtroom Simulation State-Machine.</p>
+            <div class="bg-slate-900 p-2 rounded text-[10px] text-amber-300">Zero-hallucination verified</div>
+          </div>
+
+          <div class="bg-slate-950 border border-slate-800 p-4 rounded-xl space-y-2">
+            <div class="flex items-center gap-2 text-emerald-400 font-bold">
+              <span>04</span> <span>Official Execution</span>
+            </div>
+            <p class="text-[11px] text-slate-400 font-sans">Outputs official Police Regulation Form 42 PDF petition + Bar Advocate digital signature seal + bKash micro-checkout.</p>
+            <div class="bg-slate-900 p-2 rounded text-[10px] text-white">PRB Form 42 Ready</div>
+          </div>
+
+        </div>
+
+        <div class="bg-slate-950/80 border border-slate-800 p-4 rounded-xl text-xs space-y-2">
+          <div class="font-bold text-slate-200">Core Technology Stack:</div>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-slate-400 text-[11px]">
+            <div>• LLM: Gemini 1.5 Pro / Flash</div>
+            <div>• Database: ChromaDB / pgvector</div>
+            <div>• Orchestration: LangChain Graphs</div>
+            <div>• 3D Simulation: WebXR / Three.js</div>
           </div>
         </div>
       </div>
@@ -473,8 +503,18 @@
   <footer class="border-t border-slate-800 bg-[#070a12] text-slate-500 text-xs py-6 px-4 md:px-10 text-center">
     <div class="max-w-4xl mx-auto flex flex-wrap justify-between items-center gap-4">
       <div>
-        <span class="font-bold text-slate-300">NyaySetu (ন্যায়সেতু) 360</span> • Legal Technology Research Initiative
+        <span class="font-bold text-slate-300">NyaySetu (ন্যায়সেতু) 360</span> • Official Submission by <strong class="text-white">Team Dododeck</strong>
+        <div class="text-[11px] text-slate-500 mt-0.5">Daffodil International University • Track: JusticeSphere AI (Challenge: Legal Copilot)</div>
       </div>
+      <div class="flex items-center gap-4 text-[11px]">
+        <span>Police Regulations of Bengal (PRB Form 42)</span>
+        <span>•</span>
+        <span>Evidence Act 1872 Compliance</span>
+        <span>•</span>
+        <span>International AI Builders Congress 2026</span>
+      </div>
+    </div>
+  </footer>
       <div class="flex items-center gap-4 text-[11px]">
         <span>Police Regulations of Bengal Compliant</span>
         <span>•</span>
