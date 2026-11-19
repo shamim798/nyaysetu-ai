@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NyaySetu AI (ন্যায়সেতু ৩৬০) — Live Prototype</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Hind Siliguri', 'Inter', sans-serif; }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen antialiased">
+
+  <!-- Navbar -->
+  <nav class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-50 px-6 py-4 flex justify-between items-center">
+    <div class="flex items-center space-x-3">
+      <span class="text-2xl">⚖️</span>
+      <div>
+        <span class="font-extrabold text-xl tracking-tight text-white">NyaySetu <span class="text-blue-500">AI</span></span>
+        <span class="text-xs text-blue-400 block -mt-1 font-semibold">ন্যায়সেতু ৩৬০ • JusticeSphere AI</span>
+      </div>
+    </div>
+    <div class="flex items-center space-x-3">
+      <span class="bg-blue-900/60 text-blue-300 text-xs px-2.5 py-1 rounded-full border border-blue-700/50">Live Prototype v1.0</span>
+      <a href="https://github.com/shamim798/nyaysetu-ai" target="_blank" class="bg-slate-800 hover:bg-slate-700 text-white text-xs px-3 py-1.5 rounded-lg border border-slate-700 transition">GitHub Repo</a>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <header class="max-w-5xl mx-auto px-6 pt-10 pb-8 text-center">
+    <div class="inline-flex items-center gap-2 bg-blue-950/70 text-blue-400 border border-blue-800/60 px-3 py-1 rounded-full text-xs font-semibold mb-4">
+      <span>🇧🇩</span> International AI Builders Congress 2026 • Idea to Unicorn
+    </div>
+    <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight text-white mb-4">
+      আইনি জটিলতা দূর করতে <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">এআই-চালিত ন্যায়সেতু</span>
+    </h1>
+    <p class="text-slate-400 text-base md:text-lg max-w-2xl mx-auto mb-6">
+      সাধারণ মানুষের জন্য মুখে বলে ১-ক্লিক পুলিশ জিডি ও এজাহার ড্রাফটিং, আর ল' শিক্ষার্থীদের জন্য ৩ডি ভার্চুয়াল এজলাস মক ট্রায়াল প্ল্যাটফর্ম।
+    </p>
+  </header>
+
+  <!-- Interactive Tabs Container -->
+  <main class="max-w-5xl mx-auto px-6 pb-20">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-2xl">
+      
+      <!-- Tab Buttons -->
+      <div class="flex flex-wrap gap-2 border-b border-slate-800 pb-4 mb-6">
+        <button onclick="switchTab('gd')" id="btn-gd" class="tab-btn px-4 py-2 rounded-lg text-sm font-semibold bg-blue-600 text-white">
+          📢 ১-ক্লিক GD/FIR জেনারেটর
+        </button>
+        <button onclick="switchTab('court')" id="btn-court" class="tab-btn px-4 py-2 rounded-lg text-sm font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700">
+          👨‍⚖️ ৩ডি ভার্চুয়াল কোর্টরুম
+        </button>
+        <button onclick="switchTab('evidence')" id="btn-evidence" class="tab-btn px-4 py-2 rounded-lg text-sm font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700">
+          🛡️ এভিডেন্স স্ট্রেংথ অডিটর
+        </button>
+        <button onclick="switchTab('contract')" id="btn-contract" class="tab-btn px-4 py-2 rounded-lg text-sm font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700">
+          🌐 ক্রস-বর্ডার কন্ট্রাক্ট স্ক্যানার
+        </button>
+      </div>
+
+      <!-- TAB 1: GD Generator -->
+      <div id="tab-gd" class="tab-content block">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="space-y-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-400 mb-1">থানার নাম (Police Station):</label>
+              <input type="text" id="ps" value="ধানমন্ডি মডেল থানা, ঢাকা" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-400 mb-1">আপনার নাম (Complainant Name):</label>
+              <input type="text" id="cname" value="মোঃ শামীম আলী" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-400 mb-1">ঘটনার ধরন (Crime Category):</label>
+              <select id="crime" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+                <option>ছিনতাই / দস্যুতা (Penal Code 392)</option>
+                <option>চুরি (Theft - Penal Code 379)</option>
+                <option>সাইবার হ্যারাসমেন্ট (Cyber Security Act)</option>
+                <option>হুমকি ও চাঁদাবাজি (Extortion - Section 385)</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-400 mb-1">ঘটনার বিবরণ (Voice / Text):</label>
+              <textarea id="narrative" rows="4" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">গত ১৮ই নভেম্বর সন্ধ্যায় ধানমন্ডি লেকে হাঁটার সময় দুজন অজ্ঞাত ব্যক্তি ছুরি দেখিয়ে আমার স্মার্টফোন ও মানিব্যাগ ছিনিয়ে নেয়।</textarea>
+            </div>
+            <button onclick="generateGD()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2.5 rounded-lg text-sm transition">
+              ড্রাফট তৈরি করুন (Generate Legal Draft) ⚡
+            </button>
+          </div>
+
+          <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between border-b border-slate-800 pb-2 mb-3">
+                <span class="text-xs font-bold text-green-400">✅ প্রিন্ট-রেডি আবেদন খসড়া</span>
+                <span class="text-[10px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded">ধারা ৩৯২ দণ্ডবিধি</span>
+              </div>
+              <pre id="gd-output" class="text-xs text-slate-300 font-mono whitespace-pre-wrap leading-relaxed max-h-[250px] overflow-y-auto">
+তারিখ: ১৯/১১/২০২৬
+বরাবর,
+অফিসার-ইন-চার্জ (ভারপ্রাপ্ত কর্মকর্তা)
+ধানমন্ডি মডেল থানা, ঢাকা।
+
+বিষয়: সাধারণ ডায়েরি (GD) / এজাহারের আবেদন।
+
+জনাব,
+আমি নিম্নস্বাক্ষরকারী মোঃ শামীম আলী জানাচ্ছি যে, গত ১৮ই নভেম্বর সন্ধ্যায় ধানমন্ডি লেকে হাঁটার সময় দুজন অজ্ঞাত ব্যক্তি ছুরি দেখিয়ে আমার স্মার্টফোন ও মানিব্যাগ ছিনিয়ে নেয়।
+
+উক্ত অপরাধটি বাংলাদেশ দণ্ডবিধি ১৮৬০-এর ৩৯২ ধারার (দস্যুতা) আওতাভুক্ত একটি আমলযোগ্য অপরাধ। অতএব বিষয়টি নথিভুক্ত করে দ্রুত আইনানুগ ব্যবস্থা গ্রহণে মর্জি হয়।
+
+বিনীত নিবেদক,
+মোঃ শামীম আলী
+[Advocate Digital Seal: Adv. K. Ahmed, Bar Council #41029]
+              </pre>
+            </div>
+            <div class="pt-3 border-t border-slate-800 flex items-center justify-between">
+              <span class="text-xs text-slate-400">ফি: ৳৫০ (bKash/Nagad)</span>
+              <button onclick="alert('বিকাশ পেমেন্ট গেটওয়ে ওপেন হচ্ছে... ৫০ টাকা ফি পরিশোধ করে অফিশিয়াল পিডিএফ ডাউনলোড করুন।')" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-4 py-2 rounded-lg transition">
+                বিকাশ দিয়ে ডাউনলোড (৳৫০) 💳
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 2: Courtroom -->
+      <div id="tab-court" class="tab-content hidden">
+        <div class="bg-slate-950 border border-slate-800 rounded-xl p-5 text-center mb-4">
+          <div class="text-4xl mb-2">🏛️</div>
+          <h3 class="text-lg font-bold text-white mb-1">৩ডি ভার্চুয়াল কোর্টরুম (WebXR Simulation)</h3>
+          <p class="text-xs text-slate-400 max-w-lg mx-auto">আইন শিক্ষার্থীদের জন্য এআই বিচারক ও এআই সাক্ষীর সাথে লাইভ জেরা ও আপত্তি (Objection) সিমুলেশন।</p>
+        </div>
+        <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 space-y-3 mb-4">
+          <div class="p-3 bg-slate-900 border border-slate-800 rounded-lg text-xs">
+            <span class="font-bold text-amber-400">👨‍⚖️ Justice Rahman (AI Judge):</span> "Order in the court! Counsel, please proceed with the cross-examination of Witness #1."
+          </div>
+          <div class="p-3 bg-slate-900 border border-slate-800 rounded-lg text-xs">
+            <span class="font-bold text-indigo-400">🗣️ Rahim Ullah (Witness):</span> "I was standing near the Dhanmondi lake at 7:15 PM when I saw the two individuals running."
+          </div>
+          <div id="court-verdict" class="hidden p-3 bg-emerald-950/60 border border-emerald-800/80 rounded-lg text-xs text-emerald-300 font-semibold">
+            👨‍⚖️ Judge: "Objection SUSTAINED! Under Section 143 of the Evidence Act 1872, leading questions are strictly forbidden in examination-in-chief."
+          </div>
+        </div>
+        <div class="flex gap-2">
+          <button onclick="courtObjection('leading')" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold py-2.5 rounded-lg transition">
+            ⚖️ Objection: Leading Question (Sec 143)
+          </button>
+          <button onclick="courtObjection('hearsay')" class="flex-1 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold py-2.5 rounded-lg transition">
+            ⚖️ Objection: Hearsay Evidence
+          </button>
+        </div>
+      </div>
+
+      <!-- TAB 3: Evidence Auditor -->
+      <div id="tab-evidence" class="tab-content hidden">
+        <h3 class="text-lg font-bold text-white mb-2">এভিডেন্স স্ট্রেংথ অডিটর</h3>
+        <p class="text-xs text-slate-400 mb-4">আপনার ডকুমেন্টস ও প্রমাণ আপলোড করলে সাক্ষ্য আইন ১৮৭২ অনুযায়ী তার আইনি শক্তি যাচাই করবে।</p>
+        <div class="border-2 border-dashed border-slate-700 rounded-xl p-6 text-center mb-4">
+          <span class="text-3xl block mb-2">📁</span>
+          <p class="text-xs text-slate-300 font-semibold">স্ক্রিনশট, অডিও রেকর্ড বা দলিলের কপি আপলোড করুন</p>
+          <button onclick="auditEvidence()" class="mt-3 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold px-4 py-2 rounded-lg">
+            নমুনা প্রমাণ অডিট করুন 🔍
+          </button>
+        </div>
+        <div id="evidence-result" class="hidden bg-slate-950 border border-slate-800 rounded-xl p-4 text-xs space-y-2">
+          <div class="flex justify-between items-center">
+            <span class="font-bold text-white">আদালতে প্রমাণযোগ্যতার স্কোর:</span>
+            <span class="text-emerald-400 font-extrabold text-sm">৮৫% (উচ্চ গ্রহণযোগ্য)</span>
+          </div>
+          <div class="w-full bg-slate-800 rounded-full h-2">
+            <div class="bg-emerald-500 h-2 rounded-full" style="width: 85%"></div>
+          </div>
+          <p class="text-slate-400">✔️ ডিজিটাল স্ক্রিনশটে সুস্পষ্ট টাইমস্ট্যাম্প এবং মোবাইল নম্বর চিহ্নিত হয়েছে।</p>
+          <p class="text-amber-400">⚠️ পরামর্শ: সংশ্লিষ্ট বিকাশ ট্রানজেকশন আইডি যুক্ত করলে প্রমাণের ওজন ৯৫% হবে।</p>
+        </div>
+      </div>
+
+      <!-- TAB 4: Contract Scanner -->
+      <div id="tab-contract" class="tab-content hidden">
+        <h3 class="text-lg font-bold text-white mb-2">ক্রস-বর্ডার ফ্রিল্যান্সার কন্ট্রাক্ট স্ক্যানার</h3>
+        <p class="text-xs text-slate-400 mb-3">বিদেশি ক্লায়েন্টের সার্ভিস এগ্রিমেন্ট বা NDA পেস্ট করে ঝুঁকিপূর্ণ শর্ত চিহ্নিত করুন।</p>
+        <textarea id="contract-input" rows="3" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-3 text-xs text-white mb-3">Client shall own all IP worldwide in perpetuity and Contractor waives all moral rights without royalty.</textarea>
+        <button onclick="scanContract()" class="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold px-4 py-2.5 rounded-lg mb-3">
+          চুক্তির ঝুঁকি স্ক্যান করুন 🛡️
+        </button>
+        <div id="contract-result" class="hidden bg-red-950/40 border border-red-800/60 rounded-xl p-3 text-xs text-red-200 space-y-1">
+          <p class="font-bold text-red-400">🚨 ১টি উচ্চ ঝুঁকিপূর্ণ ধারা চিহ্নিত হয়েছে!</p>
+          <p>• ধারা ৩: রয়্যালটি মুক্ত আজীবন আইপি হস্তান্তর ফ্রিল্যান্সারের জন্য বিপজ্জনক।</p>
+          <p class="text-emerald-300">💡 প্রস্তাবিত নিরাপদ ধারা: "IP assignment is conditional upon 100% full payment clearance."</p>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('bg-blue-600', 'text-white');
+        btn.classList.add('bg-slate-800', 'text-slate-300');
+      });
+      document.getElementById('tab-' + tabId).classList.remove('hidden');
+      const activeBtn = document.getElementById('btn-' + tabId);
+      activeBtn.classList.remove('bg-slate-800', 'text-slate-300');
+      activeBtn.classList.add('bg-blue-600', 'text-white');
+    }
+
+    function generateGD() {
+      const ps = document.getElementById('ps').value;
+      const cname = document.getElementById('cname').value;
+      const narrative = document.getElementById('narrative').value;
+      document.getElementById('gd-output').textContent = `তারিখ: ১৯/১১/২০২৬\nবরাবর,\nঅফিসার-ইন-চার্জ\n${ps}।\n\nবিষয়: সাধারণ ডায়েরি (GD) / এজাহারের আবেদন।\n\nজনাব,\nআমি নিম্নস্বাক্ষরকারী ${cname} জানাচ্ছি যে, ${narrative}\n\nউক্ত অপরাধটি বাংলাদেশ দণ্ডবিধি ১৮৬০-এর ৩৯২ ধারার (দস্যুতা) আওতাভুক্ত একটি আমলযোগ্য অপরাধ। অতএব বিষয়টি তদন্তের মর্জি হয়।\n\nবিনীত নিবেদক,\n${cname}\n[Advocate Digital Seal: Adv. K. Ahmed, Bar Council #41029]`;
+    }
+
+    function courtObjection() {
+      document.getElementById('court-verdict').classList.remove('hidden');
+    }
+
+    function auditEvidence() {
+      document.getElementById('evidence-result').classList.remove('hidden');
+    }
+
+    function scanContract() {
+      document.getElementById('contract-result').classList.remove('hidden');
+    }
+  </script>
+</body>
+</html>
